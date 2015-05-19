@@ -673,12 +673,17 @@ JS;
 
         if (in_array($elementName, array('input', 'textarea'))) {
             $existingValueLength = strlen($element->attribute('value'));
-            // Add the TAB key to ensure we unfocus the field as browsers are triggering the change event only
-            // after leaving the field.
-            $value = str_repeat(Key::BACKSPACE . Key::DELETE, $existingValueLength) . $value . Key::TAB;
+            if ($existingValueLength > 0) {
+                $deletionKeySequence = str_repeat(Key::BACKSPACE . Key::DELETE, $existingValueLength);
+                $element->postValue(array('value' => array($deletionKeySequence)));
+            }
         }
 
-        $element->postValue(array('value' => array($value)));
+        $element->clear();
+
+        // Add the TAB key to ensure we unfocus the field as browsers are triggering the change event only
+        // after leaving the field.
+        $element->postValue(array('value' => array($value . Key::TAB)));
     }
 
     /**
